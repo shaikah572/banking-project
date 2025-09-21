@@ -1,6 +1,6 @@
 import random
 
-class Bank():
+class Bank:
     def __init__(self):
         customers = {}
         accounts = {}
