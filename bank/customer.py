@@ -6,5 +6,7 @@ class Customer:
         self.password = password
         self.accounts = [] # account obj
     
-    # add account to the customer method
+    # add accounts to the customer method
+    def add_account(self, account):
+        self.accounts.append(account)
     
