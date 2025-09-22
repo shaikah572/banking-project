@@ -1,10 +1,11 @@
-import random
 import csv
+from customer import Customer
+from account import Account
 
 class Bank:
     def __init__(self):
-        customers = {}
-        accounts = {}
-        id_generator = random.randint(1000, 9999)
+        self.bank_file = "bank.csv"
+        self.customers = {}
     
-    # bank methods here 
+    # load data
+    # add customer 
