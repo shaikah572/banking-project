@@ -14,9 +14,6 @@ class TestBank(unittest.TestCase):
         after_added = len(self.bank.customers)
         self.assertEqual(after_added, before_added+1)
 
-        # check if return added new customer message successfully
-        self.assertIn('\nNew customer added', add_new_customer)
-
         # check if created checing account for added customer
         new_id = str(max(int(s) for s in self.bank.customers.keys()))
         new_customer = self.bank.customers[new_id]

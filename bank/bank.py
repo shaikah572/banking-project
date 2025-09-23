@@ -41,7 +41,7 @@ class Bank:
 
         # add new customer to customers dict
         self.customers[new_id] = new_customer
-        return f'\nNew customer added : {new_customer} \nNew account created: {new_customer.accounts[0]}'
+        return new_customer
     
 
     def create_saving_account(self, id):
@@ -56,10 +56,3 @@ class Bank:
         customer.add_account(saving_account)
         
         return f'\nCreated saving account {self.customers[id].accounts[1]} \nFor {self.customers[id]}'
-
-
-
-# bank = Bank()
-
-# print(bank.add_customer('d','r',"j"))
-# print(bank.create_saving_account(10006))
