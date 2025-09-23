@@ -20,8 +20,7 @@ while True:
 
         elif choice == '2':
             customer_id = input('Enter your bank ID: ')
-            bank.create_saving_account(customer_id)
-            print('Saving account created.')
+            print(bank.create_saving_account(customer_id))
         
         elif choice.upper() == 'Q':
             print('Goodbye!')

@@ -5,8 +5,8 @@ from bank.custom_exceptions import *
 
 
 class Bank:
-    def __init__(self):
-        self.bank_file = "bank.csv"
+    def __init__(self, bank_file = "bank.csv"):
+        self.bank_file = bank_file
         self.customers = {}
         self.load_data() 
     
@@ -32,7 +32,11 @@ class Bank:
     # add customer 
     def add_customer(self, first_name, last_name, password):
         # generate new id and create new customer object
-        new_id = str(max(int(s) for s in self.customers.keys()) + 1 ) # stackoverflow > "Get max key in dictionary"
+        if self.customers:
+            new_id = str(max(int(s) for s in self.customers.keys()) + 1 ) # stackoverflow > "Get max key in dictionary"
+        else: 
+            new_id = '10001'
+        
         new_customer = Customer(new_id, first_name, last_name, password)
 
         # create default checking account
@@ -52,7 +56,10 @@ class Bank:
         
         # create the saving account 
         customer = self.customers[id]
+        if len(customer.accounts) >= 2:
+            raise BankError('Saving account already created!')
+        
         saving_account = Account(id, 0, 'Saving')
         customer.add_account(saving_account)
-        
-        return f'\nCreated saving account {self.customers[id].accounts[1]} \nFor {self.customers[id]}'
+
+        return 'Saving account created.'
