@@ -12,6 +12,10 @@ class TestBank(unittest.TestCase):
             file.write("account_id,frst_name,last_name,password,balance_checking,balance_savings\n")
 
        self.bank = Bank(self.test_file)
+
+       # create default customer
+       self.customer = self.bank.add_customer('Shaikah', 'Alrubayan', 'Pass123@Aa')
+       self.get_id = self.customer.id
     
     def tearDown(self):
         os.remove(self.test_file)
@@ -21,7 +25,7 @@ class TestBank(unittest.TestCase):
     def test_add_customer(self):
         # check if customer added to customers dict 
         before_added = len(self.bank.customers)
-        add_new_customer = self.bank.add_customer('Shaikah', 'Alrubayan', 'Pass123@Aa')
+        add_new_customer = self.bank.add_customer('Norah', 'Alotaibi', 'Exampl3*Fl')
         after_added = len(self.bank.customers)
         self.assertEqual(after_added, before_added+1)
 
@@ -29,28 +33,44 @@ class TestBank(unittest.TestCase):
         self.assertEqual(add_new_customer.accounts[0].type, 'Checking')
     
     def test_create_saving_account(self):
-        # create customer and get ID
-        add_new_customer = self.bank.add_customer('Shaikah', 'Alrubayan', 'Pass123@Aa')
-        get_id = add_new_customer.id
-
         # create saving account
-        self.bank.create_saving_account(get_id)
+        self.bank.create_saving_account(self.get_id)
 
         # check if saving account created for customer
-        self.assertEqual(len(self.bank.customers[get_id].accounts), 2)
-        self.assertEqual(self.bank.customers[get_id].accounts[1].type, 'Saving')
+        self.assertEqual(len(self.bank.customers[self.get_id].accounts), 2)
+        self.assertEqual(self.bank.customers[self.get_id].accounts[1].type, 'Saving')
 
     def test_create_saving_account_invalid_customer(self):
         with self.assertRaises(CustomerNotFoundError):
             self.bank.create_saving_account('1')
 
     def test_create_saving_account_already_created(self):
-        add_new_customer = self.bank.add_customer('Shaikah', 'Alrubayan', 'Pass123@Aa')
-        get_id = add_new_customer.id
-
         # first time creating saving account
-        self.bank.create_saving_account(get_id)
+        self.bank.create_saving_account(self.get_id)
 
         # tring to create another saving accounnt
         with self.assertRaises(BankError):
-            self.bank.create_saving_account(get_id)
+            self.bank.create_saving_account(self.get_id)
+    
+    def test_login(self):
+        # logging in and testing if customer is logged in
+        self.bank.login(self.get_id, 'Pass123@Aa')
+        self.assertEqual(self.bank.logged_in_customer, self.customer)
+    
+    def test_login_invalid_id(self):
+        with self.assertRaises(AuthenticationError):
+            self.bank.login('1', 'Pass123@Aa')
+    
+    def test_login_wrong_password(self):
+        with self.assertRaises(AuthenticationError):
+            self.bank.login(self.get_id, 'password')
+    
+    def test_logout_without_login(self):
+        self.bank.logged_in_customer = None
+        with self.assertRaises(BankError):
+            self.bank.logout()
+    
+    def test_require_login(self):
+        self.bank.logged_in_customer = None
+        with self.assertRaises(AuthenticationError):
+            self.bank.require_login()
