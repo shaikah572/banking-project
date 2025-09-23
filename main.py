@@ -30,5 +30,5 @@ while True:
             print('Invalid choice')
         
     except Exception as e:
-        print(e)
+        print('Error: ', e)
         

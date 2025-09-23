@@ -8,9 +8,11 @@ class Bank:
     def __init__(self, bank_file = "bank.csv"):
         self.bank_file = bank_file
         self.customers = {}
+        self.logged_in_customer = None
         self.load_data() 
     
-    # load data
+
+    #--------- Load Data
     def load_data(self):
        with open(self.bank_file, 'r', newline='')  as file:
            reader = csv.DictReader(file) # stackoverflow > "Creating a dictionary from a csv file?"
@@ -27,9 +29,10 @@ class Bank:
 
                # save customer in customers dict
                self.customers[current_customer.id] = current_customer
+    #--------------------------- 
 
-               
-    # add customer 
+
+    #--------- Management
     def add_customer(self, first_name, last_name, password):
         # generate new id and create new customer object
         if self.customers:
@@ -52,7 +55,7 @@ class Bank:
         # search customer by id in customers dict and raise error if not found
         id = str(id)
         if id not in self.customers:
-            raise CustomerNotFoundError('Error! Customer ID not found')
+            raise CustomerNotFoundError('Customer not found')
         
         # create the saving account 
         customer = self.customers[id]
@@ -63,3 +66,35 @@ class Bank:
         customer.add_account(saving_account)
 
         return 'Saving account created.'
+    #--------------------------- 
+
+
+    #--------- Authentication
+    def login(self, id, password):
+        # check customer ID
+        if id not in self.customers:
+            raise AuthenticationError('Customer ID not found.')
+        
+        customer = self.customers[id]
+
+        # check correct password
+        if customer.password != password:
+            raise AuthenticationError('Incorrect password.')
+        
+        self.logged_in_customer = customer
+        return f'Welcome {customer.get_fullname()}'
+    
+    def logout(self):
+        # if customer logged in then log out
+        if self.logged_in_customer:
+            self.logged_in_customer = None
+
+        # else raise an error
+        else:
+            raise BankError('You are not logged in.')
+        
+        return "Logged out."
+    
+    def require_login(self):
+        if not self.logged_in_customer:
+            raise AuthenticationError('You must log in first.')

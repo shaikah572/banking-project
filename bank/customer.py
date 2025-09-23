@@ -10,6 +10,9 @@ class Customer:
     def add_account(self, account):
         self.accounts.append(account)
     
+    def get_fullname(self):
+        return f'{self.first_name} {self.last_name}'
+    
     def __str__(self):
         return f'\nCustomer ID: {self.id} \nCustomer full name: {self.first_name} {self.last_name} \nBalance: {self.accounts[0].balance}'
     
