@@ -7,3 +7,6 @@ class Account:
         self.is_active = True
     
     # deposit, withdraw, transer methods
+
+    def __str__(self):
+        return f'\nCustomer ID: {self.owner_id} \nAccount type: {self.type} \nBalance: {self.balance}'
