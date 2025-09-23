@@ -30,3 +30,7 @@ class TestBank(unittest.TestCase):
         # check if saving account created for customer
         saving_account_customer = self.bank.customers[get_id]
         self.assertEqual(saving_account_customer.accounts[1].type, 'Saving')
+
+    def test_create_saving_account_invalid_customer(self):
+        with self.assertRaises(CustomerNotFoundError):
+            self.bank.create_saving_account('1')
