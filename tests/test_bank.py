@@ -22,3 +22,11 @@ class TestBank(unittest.TestCase):
         new_customer = self.bank.customers[new_id]
         self.assertEqual(new_customer.accounts[0].type, 'Checking')
     
+    def test_create_saving_account(self):
+        # get customer ID and create saving accounnt
+        get_id = str(max(int(s) for s in self.bank.customers.keys()))
+        self.bank.create_saving_account(get_id)
+
+        # check if saving account created for customer
+        saving_account_customer = self.bank.customers[get_id]
+        self.assertEqual(saving_account_customer.accounts[1].type, 'Saving')
