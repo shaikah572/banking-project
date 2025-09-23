@@ -1,7 +1,7 @@
 import csv
-from customer import Customer
-from account import Account
-from custom_exceptions import *
+from bank.customer import Customer
+from bank.account import Account
+from bank.custom_exceptions import *
 
 
 class Bank:
@@ -45,11 +45,12 @@ class Bank:
     
 
     def create_saving_account(self, id):
-
+        # search customer by id in customers dict and raise error if not found
         id = str(id)
         if id not in self.customers:
             raise CustomerNotFoundError('Error! Customer ID not found')
         
+        # create the saving account 
         customer = self.customers[id]
         saving_account = Account(id, 0, 'Saving')
         customer.add_account(saving_account)
@@ -58,3 +59,7 @@ class Bank:
 
 
 
+# bank = Bank()
+
+# print(bank.add_customer('d','r',"j"))
+# print(bank.create_saving_account(10006))
