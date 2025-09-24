@@ -31,6 +31,10 @@ class Account:
             self.overdraft_count += 1
             self.balance -= 35
 
+            # don't go beyond -100 + overdraft fee -35 = -135
+            if self.balance < -135:
+                self.balance = -135
+
         # deactivate account when overdraft limit is reached
         if self.overdraft_count >= 2:
             self.is_active = False

@@ -7,6 +7,7 @@ while True:
     print('\n###----- BANK MENU -----###')
     print('1. Add Customer')
     print('2. Create Saving Account')
+    print('3. Login')
     print('Q. Exit')
     choice = input('Enter your option: ')
 
@@ -21,6 +22,11 @@ while True:
         elif choice == '2':
             customer_id = input('Enter your bank ID: ')
             print(bank.create_saving_account(customer_id))
+        
+        elif choice == '3':
+            customer_id = input('Enter customer ID: ')
+            customer_password = input('Enter customer password: ')
+            bank.login(customer_id, customer_password)
         
         elif choice.upper() == 'Q':
             print('Goodbye!')
