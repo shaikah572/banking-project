@@ -50,7 +50,6 @@ class Bank:
         self.customers[new_id] = new_customer
         return new_customer
     
-
     def create_saving_account(self, id):
         # search customer by id in customers dict and raise error if not found
         id = str(id)
