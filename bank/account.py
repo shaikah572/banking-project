@@ -10,9 +10,30 @@ class Account:
     
     # deposit, withdraw, transer methods
     def deposit(self, amount):
+        # raise error if account not active
         if not self.is_active:
             raise AccountInactiveError('Account is not active.')
         self.balance += amount
+
+    def withdraw(self, amount):
+        # raise error if account not active
+        if not self.is_active:
+            raise AccountInactiveError('Account is not active.')
+
+        # apply overdraft protection if account is < -100
+        if self.balance - amount < -100:
+            raise OverdraftError('Overdraft limit reached.')
+        
+        self.balance -= amount
+
+        # apply overdraft protection if account is 0 
+        if self.balance < 0:
+            self.overdraft_count += 1
+            self.balance -= 35
+
+        # deactivate account when overdraft limit is reached
+        if self.overdraft_count >= 2:
+            self.is_active = False
 
     def __str__(self):
         return f'\nCustomer ID: {self.owner_id} \nAccount type: {self.type} \nBalance: {self.balance}'
