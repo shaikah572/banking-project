@@ -12,6 +12,11 @@ class Account:
     def deposit(self, amount):
         self.balance += amount
 
+        # reactivate account after buying the overdraft 
+        if not self.is_active and self.balance >= 0:
+            self.is_active = True
+            self.overdraft_count = 0
+
     def withdraw(self, amount):
         # raise error if account not active
         if not self.is_active:
