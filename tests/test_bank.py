@@ -90,3 +90,26 @@ class TestBank(unittest.TestCase):
     def test_deposit_invalid_account(self):
         with self.assertRaises(BankError):
             self.bank.deposit('type', 200)
+    
+    def test_withdraw(self):
+        # deposit money first
+        self.bank.deposit("checking", 200)
+
+        before_balance = self.customer.get_account("checking").balance
+        self.bank.withdraw("checking", 100)
+        after_balance = self.customer.get_account("checking").balance
+
+        self.assertEqual(after_balance, before_balance - 100)
+
+    def test_withdraw_require_login(self):
+        self.bank.logout()
+        with self.assertRaises(AuthenticationError):
+            self.bank.withdraw("checking", 50)
+
+    def test_withdraw_invalid_account(self):
+        with self.assertRaises(BankError):
+            self.bank.withdraw("type", 50)
+    
+    def test_withdraw_overdraft(self):
+        with self.assertRaises(OverdraftError):
+            self.bank.withdraw("checking", 101)
