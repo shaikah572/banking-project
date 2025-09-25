@@ -16,6 +16,7 @@ class TestBank(unittest.TestCase):
        # create default customer
        self.customer = self.bank.add_customer('Shaikah', 'Alrubayan', 'Pass123@Aa')
        self.get_id = self.customer.id
+       self.bank.login(self.get_id, 'Pass123@Aa')
     
     def tearDown(self):
         os.remove(self.test_file)
@@ -53,8 +54,7 @@ class TestBank(unittest.TestCase):
             self.bank.create_saving_account(self.get_id)
     
     def test_login(self):
-        # logging in and testing if customer is logged in
-        self.bank.login(self.get_id, 'Pass123@Aa')
+        # testing if customer is logged in
         self.assertEqual(self.bank.logged_in_customer, self.customer)
     
     def test_login_invalid_id(self):
@@ -74,3 +74,19 @@ class TestBank(unittest.TestCase):
         self.bank.logged_in_customer = None
         with self.assertRaises(AuthenticationError):
             self.bank.require_login()
+    
+    def test_deposit(self):
+        before_balance = self.customer.get_account('checking').balance
+        self.bank.deposit('checking', 200)
+        after_balance = self.customer.get_account('checking').balance
+
+        self.assertEqual(after_balance, before_balance+200)
+    
+    def test_deposit_require_login(self):
+        self.bank.logout()
+        with self.assertRaises(AuthenticationError):
+            self.bank.deposit('checking', 200)
+    
+    def test_deposit_invalid_account(self):
+        with self.assertRaises(BankError):
+            self.bank.deposit('type', 200)
