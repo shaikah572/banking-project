@@ -8,7 +8,7 @@ class Account:
         self.overdraft_count = 0
         self.is_active = True
     
-    # deposit, withdraw, transer methods
+    # deposit, withdraw methods
     def deposit(self, amount):
         # raise error if account not active
         if not self.is_active:
@@ -19,6 +19,13 @@ class Account:
         # raise error if account not active
         if not self.is_active:
             raise AccountInactiveError('Account is not active.')
+        
+        # check if it saving account so it not get overdrawn
+        if self.type.capitalize() == 'Saving':
+            if self.balance - amount < 0:
+                raise OverdraftError('Saving account cannot be overdrawn.')
+            self.balance -= amount
+            return
 
         # apply overdraft protection if account is < -100
         if self.balance - amount < -100:
