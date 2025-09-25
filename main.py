@@ -75,6 +75,7 @@ while True:
 
         elif choice.upper() == 'Q':
             print('Goodbye!')
+            bank.save_data()
             break
 
         else: 

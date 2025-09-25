@@ -5,7 +5,7 @@ from bank.custom_exceptions import *
 
 
 class Bank:
-    def __init__(self, bank_file = "bank.csv"):
+    def __init__(self, bank_file = 'bank.csv'):
         self.bank_file = bank_file
         self.customers = {}
         self.logged_in_customer = None
@@ -146,3 +146,23 @@ class Bank:
         return f'{amount} transferred from {self.logged_in_customer.id} account to {target_id} account \nAccount balance: {from_account.balance}'
     #--------------------------- 
 
+
+    #--------- Save Data
+    def save_data(self):
+        # geeksforgeeks > "Writing CSV files in Python"
+        with open(self.bank_file, 'w', newline='') as file:
+            fieldnames = ['account_id', 'frst_name', 'last_name', 'password', 'balance_checking', 'balance_savings']
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            for customer in self.customers.values():
+                check_acc = customer.get_account('checking')
+                save_acc = customer.get_account('saving')
+                writer.writerow({
+                    'account_id': customer.id,
+                    'frst_name': customer.first_name,
+                    'last_name': customer.last_name,
+                    'password': customer.password,
+                    'balance_checking': check_acc.balance,
+                    'balance_savings': save_acc.balance if save_acc else 0,
+                })
+    #--------------------------- 
