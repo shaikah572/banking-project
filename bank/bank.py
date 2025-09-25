@@ -116,4 +116,33 @@ class Bank:
             raise BankError(f'{account_type} account not found.')
         customer_account.withdraw(amount)
         return f'{amount} withdraw from {account_type} account.'
+    
+    def trnasfer_between_accounts(self, from_type, to_type, amount):
+        self.require_login()
+
+        from_account = self.logged_in_customer.get_account(from_type)
+        to_account = self.logged_in_customer.get_account(to_type)
+
+        if not from_account or not to_account:
+            raise BankError('Invalid account type.')
+        
+        from_account.withdraw(amount)
+        to_account.deposit(amount)
+
+        return f'{amount} transferred from {from_type} to {to_type}'
+    
+    def transfer_to_customer(self, target_id, amount):
+        self.require_login()
+
+        if target_id not in self.customers:
+            raise CustomerNotFoundError('Target customer not found.')
+        
+        from_account = self.logged_in_customer.get_account('checking')
+        to_account = self.customers[target_id].get_account('checking')
+
+        from_account.withdraw(amount)
+        to_account.deposit(amount)
+
+        return f'{amount} transferred from {self.logged_in_customer.id} account to {target_id} account'
+    #--------------------------- 
 

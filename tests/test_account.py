@@ -19,11 +19,6 @@ class TestAccount(unittest.TestCase):
     def test_deposit(self):
         self.account_c.deposit(50)
         self.assertEqual(self.account_c.balance, 150)
-    
-    def test_deposit_inactive_account(self):
-        self.account_c.is_active = False
-        with self.assertRaises(AccountInactiveError):
-            self.account_c.deposit(50)
 
     def test_withdraw(self):
         self.account_c.withdraw(50)

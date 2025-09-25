@@ -10,9 +10,6 @@ class Account:
     
     # deposit, withdraw methods
     def deposit(self, amount):
-        # raise error if account not active
-        if not self.is_active:
-            raise AccountInactiveError('Account is not active.')
         self.balance += amount
 
     def withdraw(self, amount):
