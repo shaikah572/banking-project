@@ -99,3 +99,21 @@ class Bank:
             raise AuthenticationError('You must log in first.')
     #--------------------------- 
 
+
+    #--------- Transactions
+    def deposit(self, account_type, amount):
+        self.require_login()
+        customer_account = self.logged_in_customer.get_account(account_type)
+        if not customer_account:
+            raise BankError(f'{account_type} account not found.')
+        customer_account.deposit(amount)
+        return f'{amount} deposit into {account_type} account.'
+    
+    def withdraw(self, account_type, amount):
+        self.require_login()
+        customer_account = self.logged_in_customer.get_account(account_type)
+        if not customer_account:
+            raise BankError(f'{account_type} account not found.')
+        customer_account.withdraw(amount)
+        return f'{amount} withdraw from {account_type} account.'
+
