@@ -107,7 +107,7 @@ class Bank:
         if not customer_account:
             raise BankError(f'{account_type} account not found.')
         customer_account.deposit(amount)
-        return f'{amount} deposit into {account_type} account.'
+        return f'{amount} deposit into {account_type} account. \nAccount balance: {customer_account.balance}'
     
     def withdraw(self, account_type, amount):
         self.require_login()
@@ -115,9 +115,9 @@ class Bank:
         if not customer_account:
             raise BankError(f'{account_type} account not found.')
         customer_account.withdraw(amount)
-        return f'{amount} withdraw from {account_type} account.'
+        return f'{amount} withdraw from {account_type} account. \nAccount balance: {customer_account.balance}'
     
-    def trnasfer_between_accounts(self, from_type, to_type, amount):
+    def tranasfer_between_accounts(self, from_type, to_type, amount):
         self.require_login()
 
         from_account = self.logged_in_customer.get_account(from_type)
@@ -129,7 +129,7 @@ class Bank:
         from_account.withdraw(amount)
         to_account.deposit(amount)
 
-        return f'{amount} transferred from {from_type} to {to_type}'
+        return f'{amount} transferred from {from_type} to {to_type}. \n{from_type} account balance: {from_account.balance} \n{to_type} account balance: {to_account.balance} '
     
     def transfer_to_customer(self, target_id, amount):
         self.require_login()
@@ -143,6 +143,6 @@ class Bank:
         from_account.withdraw(amount)
         to_account.deposit(amount)
 
-        return f'{amount} transferred from {self.logged_in_customer.id} account to {target_id} account'
+        return f'{amount} transferred from {self.logged_in_customer.id} account to {target_id} account \nAccount balance: {from_account.balance}'
     #--------------------------- 
 
