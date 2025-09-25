@@ -93,23 +93,52 @@ class TestBank(unittest.TestCase):
     
     def test_withdraw(self):
         # deposit money first
-        self.bank.deposit("checking", 200)
+        self.bank.deposit('checking', 200)
 
-        before_balance = self.customer.get_account("checking").balance
-        self.bank.withdraw("checking", 100)
-        after_balance = self.customer.get_account("checking").balance
+        before_balance = self.customer.get_account('checking').balance
+        self.bank.withdraw('checking', 100)
+        after_balance = self.customer.get_account('checking').balance
 
         self.assertEqual(after_balance, before_balance - 100)
 
     def test_withdraw_require_login(self):
         self.bank.logout()
         with self.assertRaises(AuthenticationError):
-            self.bank.withdraw("checking", 50)
+            self.bank.withdraw('checking', 50)
 
     def test_withdraw_invalid_account(self):
         with self.assertRaises(BankError):
-            self.bank.withdraw("type", 50)
+            self.bank.withdraw('type', 50)
     
     def test_withdraw_overdraft(self):
         with self.assertRaises(OverdraftError):
-            self.bank.withdraw("checking", 101)
+            self.bank.withdraw('checking', 101)
+    
+    def test_transfer_between_accounts(self):
+        # deposit into checking acc and make a saving acc
+        self.bank.deposit('checking', 200)
+        self.bank.create_saving_account(self.get_id)
+
+        self.bank.tranasfer_between_accounts('checking', 'saving', 100)
+
+        self.assertEqual(self.bank.logged_in_customer.get_account('checking').balance, 100)
+        self.assertEqual(self.bank.logged_in_customer.get_account('saving').balance, 100)
+    
+    def test_transfer_between_accounts_invalid_account(self):
+        with self.assertRaises(BankError):
+            self.bank.tranasfer_between_accounts('checking', 'type', 50)
+       
+
+    def test_transfer_to_customer(self):
+        self.bank.deposit('checking', 200)
+
+        new_customer = self.bank.add_customer('Norah', 'Alotaibi', 'Exampl3*Fl')
+        get_new_customer_id = new_customer.id
+
+        self.bank.transfer_to_customer(get_new_customer_id, 50)
+        self.assertEqual(self.bank.logged_in_customer.get_account('checking').balance, 150)
+        self.assertEqual(new_customer.get_account('checking').balance, 50)
+    
+    def test_transfer_to_customer_invalid_customer(self):
+        with self.assertRaises(CustomerNotFoundError):
+            self.bank.transfer_to_customer('1', 100)
