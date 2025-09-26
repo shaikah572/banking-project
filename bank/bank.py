@@ -27,6 +27,12 @@ class Bank:
                current_customer.add_account(check_acc)
                current_customer.add_account(save_acc)
 
+               # get active status and overdraft count
+               active_acc = row.get('active', 'True') # stackoverflow > "Return a default value if a dictionary key is not available"
+               check_acc.is_active = active_acc.lower() == 'true'
+               overdrafts_acc = row.get('overdrafts', '0')
+               check_acc.overdraft_count = int(overdrafts_acc)
+
                # save customer in customers dict
                self.customers[current_customer.id] = current_customer
     #--------------------------- 
@@ -91,7 +97,6 @@ class Bank:
         # else raise an error
         else:
             raise BankError('You are not logged in.')
-        
         return "Logged out."
     
     def require_login(self):
@@ -102,47 +107,63 @@ class Bank:
 
     #--------- Transactions
     def deposit(self, account_type, amount):
+        # require logging in first
         self.require_login()
+
+        # get account
         customer_account = self.logged_in_customer.get_account(account_type)
+
+        # raise error if account not found
         if not customer_account:
             raise BankError(f'{account_type} account not found.')
+        
         customer_account.deposit(amount)
         return f'{amount} deposit into {account_type} account. \nAccount balance: {customer_account.balance}'
     
     def withdraw(self, account_type, amount):
+        # require logging in first
         self.require_login()
+
+        # get account
         customer_account = self.logged_in_customer.get_account(account_type)
+
+        # raise error if account not found
         if not customer_account:
             raise BankError(f'{account_type} account not found.')
+        
         customer_account.withdraw(amount)
         return f'{amount} withdraw from {account_type} account. \nAccount balance: {customer_account.balance}'
     
     def tranasfer_between_accounts(self, from_type, to_type, amount):
+        # require logging in first
         self.require_login()
-
+        
+        # get accounts from current customer
         from_account = self.logged_in_customer.get_account(from_type)
         to_account = self.logged_in_customer.get_account(to_type)
 
+        # raise error for wrong account type
         if not from_account or not to_account:
             raise BankError('Invalid account type.')
         
         from_account.withdraw(amount)
         to_account.deposit(amount)
-
         return f'{amount} transferred from {from_type} to {to_type}. \n{from_type} account balance: {from_account.balance} \n{to_type} account balance: {to_account.balance} '
     
     def transfer_to_customer(self, target_id, amount):
+        # require logging in first
         self.require_login()
 
+        # raise error if customer not found
         if target_id not in self.customers:
             raise CustomerNotFoundError('Target customer not found.')
         
+        # transfer from checking accounts only
         from_account = self.logged_in_customer.get_account('checking')
         to_account = self.customers[target_id].get_account('checking')
 
         from_account.withdraw(amount)
         to_account.deposit(amount)
-
         return f'{amount} transferred from {self.logged_in_customer.id} account to {target_id} account \nAccount balance: {from_account.balance}'
     #--------------------------- 
 
@@ -151,7 +172,7 @@ class Bank:
     def save_data(self):
         # geeksforgeeks > "Writing CSV files in Python"
         with open(self.bank_file, 'w', newline='') as file:
-            fieldnames = ['account_id', 'frst_name', 'last_name', 'password', 'balance_checking', 'balance_savings']
+            fieldnames = ['account_id', 'frst_name', 'last_name', 'password', 'balance_checking', 'balance_savings', 'active', 'overdrafts']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
             for customer in self.customers.values():
@@ -164,5 +185,7 @@ class Bank:
                     'password': customer.password,
                     'balance_checking': check_acc.balance,
                     'balance_savings': save_acc.balance if save_acc else 0,
+                    'active': check_acc.is_active,
+                    'overdrafts': check_acc.overdraft_count,
                 })
     #--------------------------- 
