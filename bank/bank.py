@@ -3,6 +3,7 @@ from bank.customer import Customer
 from bank.account import Account
 from bank.custom_exceptions import *
 from bank.transaction import Transaction
+import re
 
 
 class Bank:
@@ -21,7 +22,7 @@ class Bank:
            for row in reader:
                
                # get customer information from csv 
-               current_customer = Customer(row['account_id'], row['frst_name'], row['last_name'], row['password'])
+               current_customer = Customer(row['account_id'], row['first_name'], row['last_name'], row['password'])
                
                # create checking and saving account
                check_acc = Account(row['account_id'], float(row['balance_checking']), 'Checking')
@@ -47,7 +48,7 @@ class Bank:
             new_id = str(max(int(s) for s in self.customers.keys()) + 1 ) # stackoverflow > "Get max key in dictionary"
         else: 
             new_id = '10001'
-        
+            
         new_customer = Customer(new_id, first_name, last_name, password)
 
         # create default checking account
@@ -73,6 +74,22 @@ class Bank:
         customer.add_account(saving_account)
 
         return 'Saving account created.'
+    
+    def check_password(self, password):  # geeksforgeeks > "Python program to check the validity of a Password"
+        if (len(password)<=8):
+            raise PasswordError('Password must be longer than 8 characters.')
+        if not re.search("[a-z]", password):
+            raise PasswordError('Password must contain a lowercase letter.')
+        if not re.search("[A-Z]", password):
+            raise PasswordError('"Password must contain an uppercase letter.')
+        if not re.search("[0-9]", password):
+            raise PasswordError('Password must contain a number.')
+        if not re.search("[_@$]" , password):
+            raise PasswordError('Password must contain at least one special character (_ @ $).')
+        if re.search(r"\s" , password):
+            raise PasswordError('Password cannot contain spaces.')
+        
+        return password
     #--------------------------- 
 
 
@@ -104,6 +121,7 @@ class Bank:
     def require_login(self):
         if not self.logged_in_customer:
             raise AuthenticationError('You must log in first.')
+    
     #--------------------------- 
 
 
@@ -190,7 +208,7 @@ class Bank:
     def save_data(self):
         # geeksforgeeks > "Writing CSV files in Python"
         with open(self.bank_file, 'w', newline='') as file:
-            fieldnames = ['account_id', 'frst_name', 'last_name', 'password', 'balance_checking', 'balance_savings', 'active', 'overdrafts']
+            fieldnames = ['account_id', 'first_name', 'last_name', 'password', 'balance_checking', 'balance_savings', 'active', 'overdrafts']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
             for customer in self.customers.values():
@@ -198,7 +216,7 @@ class Bank:
                 save_acc = customer.get_account('saving')
                 writer.writerow({
                     'account_id': customer.id,
-                    'frst_name': customer.first_name,
+                    'first_name': customer.first_name,
                     'last_name': customer.last_name,
                     'password': customer.password,
                     'balance_checking': check_acc.balance,
