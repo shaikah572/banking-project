@@ -1,85 +1,102 @@
 from bank.bank import Bank
 from bank.custom_exceptions import *
+from simple_term_menu import TerminalMenu
+from termcolor import colored
 
 bank = Bank()
 
 while True:
-    print('\n###----- BANK MENU -----###')
-    print('1. Create account')
-    print('2. Login')
-    print('Q. Exit')
-    choice = input('Enter your option: ')
+    print(colored('\n###----- BANK MENU -----###', 'light_magenta', attrs=['bold']))
+    options = ['Create account', 
+               'Login', 
+               'Exit', ]
+    terminal_menu = TerminalMenu(options)
+    choice = terminal_menu.show()
 
     try:
-        if choice == '1':
+        if choice == 0:
            first_name = input('Enter your first name: ') 
            last_name = input('Enter your last name: ') 
            password = input('Enter your password: ') 
            new_customer = bank.add_customer(first_name, last_name, password)
-           print(f'Customer added with ID {new_customer.id}')
+           print(colored(f'Customer added with ID {new_customer.id}', 'green'))
 
            s_choice = input('Do you want a saving account? (y/n): ')
            if s_choice.lower() == 'y':
-              print(bank.create_saving_account(new_customer.id))
+              print(colored(bank.create_saving_account(new_customer.id), 'green'))
 
            elif s_choice.lower() == 'n':
-              print('You can create saving account later.')
+              print(colored('You can create saving account later.', 'yellow'))
 
            else:
-              print('Wrong choice')
+              print(colored('Wrong choice', 'red'))
               
-        elif choice == '2':
+        elif choice == 1:
             customer_id = input('Enter customer ID: ')
             customer_password = input('Enter customer password: ')
             bank.login(customer_id, customer_password)
+
             while True:
-                print('\n--- Account Menu ---')
-                print('1. Deposit')
-                print('2. Withdraw')
-                print('3. Trnasfer between accounts')
-                print('4. Trnasfer to other customer')
-                print('5. Create saving account')
-                print('6. Logout')
-                l_choice = input('Enter your option: ')
-
-                if l_choice == '1':
-                    acc_type = input('Choice account (Checking/Saving): ')
-                    amount = float(input('Enter amount: '))
-                    print(bank.deposit(acc_type, amount))
+                print(colored('\n--- Account Menu ---', 'light_magenta', attrs=['bold']))
+                l_options = ['Deposit', 
+                             'Withdraw', 
+                             'Trnasfer between accounts', 
+                             'Trnasfer to other customer', 
+                             'Create saving account', 
+                             'Logout', ]
                 
-                elif l_choice == '2':
-                    acc_type = input('Choice account (Checking/Saving): ')
-                    amount = float(input('Enter amount: '))
-                    print(bank.withdraw(acc_type, amount))
-                
-                elif l_choice == '3':
-                    from_acc = input('Choice from which account (Checking/Saving): ')
-                    to_acc = input('Choice to which account (Checking/Saving): ')
-                    amount = float(input('Enter amount: '))
-                    print(bank.tranasfer_between_accounts(from_acc, to_acc, amount))
+                acc_terminal_menu = TerminalMenu(l_options)
+                l_choice = acc_terminal_menu.show()
 
-                elif l_choice == '4':
+                if l_choice == 0:
+                    deposit = ['Deposit to Checking', 'Deposit to Saving']
+                    deposit_terminal_menu = TerminalMenu(deposit)
+                    d_choice = deposit_terminal_menu.show()
+                    if d_choice == 0:
+                        amount = float(input('Enter amount: '))
+                        print(colored(bank.deposit('Checking', amount), 'green'))
+                    elif d_choice == 1:
+                        amount = float(input('Enter amount: '))
+                        print(colored(bank.deposit('Saving', amount), 'green'))
+              
+                elif l_choice == 1:
+                    withdraw = ['Withdraw from Checking', 'Withdraw from Saving']
+                    withdraw_terminal_menu = TerminalMenu(withdraw)
+                    w_choice = withdraw_terminal_menu.show()
+                    if w_choice == 0:
+                        amount = float(input('Enter amount: '))
+                        print(colored(bank.withdraw('Checking', amount), 'green'))
+                    elif w_choice == 1:
+                        amount = float(input('Enter amount: '))
+                        print(colored(bank.withdraw('Saving', amount), 'green'))
+      
+                elif l_choice == 2:
+                    trnasfer = ['Trnasfer from Checking to Saving', 'Trnasfer from Saving to Checking']
+                    trnasfer_terminal_menu = TerminalMenu(trnasfer)
+                    t_choice = trnasfer_terminal_menu.show()
+                    if t_choice == 0:
+                        amount = float(input('Enter amount: '))
+                        print(colored(bank.tranasfer_between_accounts('Checking', 'Saving', amount), 'green'))
+                    elif t_choice == 1:
+                        amount = float(input('Enter amount: '))
+                        print(colored(bank.tranasfer_between_accounts('Saving', 'Checking', amount), 'green'))
+
+                elif l_choice == 3:
                     to_customer = input('Enter target customer ID: ')
                     amount = float(input('Enter amount: '))
-                    print(bank.transfer_to_customer(to_customer, amount))
+                    print(colored(bank.transfer_to_customer(to_customer, amount), 'green'))
                 
-                elif l_choice == '5':
-                    print(bank.create_saving_account(bank.logged_in_customer.id))
+                elif l_choice == 4:
+                    print(colored(bank.create_saving_account(bank.logged_in_customer.id), 'green'))
                 
-                elif l_choice == '6':
-                    print(bank.logout())
+                elif l_choice == 5:
+                    print(colored(bank.logout(), 'cyan'))
                     break
 
-                else: 
-                    print('Invalid choice')
-
-        elif choice.upper() == 'Q':
-            print('Goodbye!')
+        elif choice == 2:
+            print(colored('Goodbye!', 'cyan'))
             bank.save_data()
             break
-
-        else: 
-            print('Invalid choice')
         
     except Exception as e:
         print('Error: ', e)
