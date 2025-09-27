@@ -2,6 +2,7 @@ import csv
 from bank.customer import Customer
 from bank.account import Account
 from bank.custom_exceptions import *
+from bank.transaction import Transaction
 
 
 class Bank:
@@ -9,8 +10,9 @@ class Bank:
         self.bank_file = bank_file
         self.customers = {}
         self.logged_in_customer = None
+        self.transaction_history = Transaction()
         self.load_data() 
-    
+        
 
     #--------- Load Data
     def load_data(self):
@@ -118,6 +120,10 @@ class Bank:
             raise BankError(f'{account_type} account not found.')
         
         customer_account.deposit(amount)
+
+        # store deposit 
+        self.transaction_history.store_transactions(customer_account.owner_id, 'deposit', amount, customer_account.balance)
+
         return f'{amount} deposit into {account_type} account. \nAccount balance: {customer_account.balance}'
     
     def withdraw(self, account_type, amount):
@@ -132,9 +138,13 @@ class Bank:
             raise BankError(f'{account_type} account not found.')
         
         customer_account.withdraw(amount)
+
+        # store withdraw 
+        self.transaction_history.store_transactions(customer_account.owner_id, 'withdraw', amount, customer_account.balance)
+
         return f'{amount} withdraw from {account_type} account. \nAccount balance: {customer_account.balance}'
     
-    def tranasfer_between_accounts(self, from_type, to_type, amount):
+    def transfer_between_accounts(self, from_type, to_type, amount):
         # require logging in first
         self.require_login()
         
@@ -148,6 +158,10 @@ class Bank:
         
         from_account.withdraw(amount)
         to_account.deposit(amount)
+
+        # store transfer
+        self.transaction_history.store_transactions(from_account.owner_id, 'tranasfer_between_accounts', amount, from_account.balance)
+
         return f'{amount} transferred from {from_type} to {to_type}. \n{from_type} account balance: {from_account.balance} \n{to_type} account balance: {to_account.balance} '
     
     def transfer_to_customer(self, target_id, amount):
@@ -164,6 +178,10 @@ class Bank:
 
         from_account.withdraw(amount)
         to_account.deposit(amount)
+
+        # store tranasfer 
+        self.transaction_history.store_transactions(from_account.owner_id, 'tranasfer_to_customer', amount, from_account.balance)
+
         return f'{amount} transferred from {self.logged_in_customer.id} account to {target_id} account \nAccount balance: {from_account.balance}'
     #--------------------------- 
 

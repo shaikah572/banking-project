@@ -119,14 +119,14 @@ class TestBank(unittest.TestCase):
         self.bank.deposit('checking', 200)
         self.bank.create_saving_account(self.get_id)
 
-        self.bank.tranasfer_between_accounts('checking', 'saving', 100)
+        self.bank.transfer_between_accounts('checking', 'saving', 100)
 
         self.assertEqual(self.bank.logged_in_customer.get_account('checking').balance, 100)
         self.assertEqual(self.bank.logged_in_customer.get_account('saving').balance, 100)
     
     def test_transfer_between_accounts_invalid_account(self):
         with self.assertRaises(BankError):
-            self.bank.tranasfer_between_accounts('checking', 'type', 50)
+            self.bank.transfer_between_accounts('checking', 'type', 50)
        
 
     def test_transfer_to_customer(self):
