@@ -26,10 +26,12 @@ class Bank:
                
                # create checking and saving account
                check_acc = Account(row['account_id'], float(row['balance_checking']), 'Checking')
-               save_acc = Account(row['account_id'], float(row['balance_savings']), 'Saving')
                current_customer.add_account(check_acc)
-               current_customer.add_account(save_acc)
-
+               
+               if row['balance_savings']:
+                   save_acc = Account(row['account_id'], float(row['balance_savings']), 'Saving')
+                   current_customer.add_account(save_acc)
+                               
                # get active status and overdraft count
                active_acc = row.get('active', 'True') # stackoverflow > "Return a default value if a dictionary key is not available"
                check_acc.is_active = active_acc.lower() == 'true'
@@ -115,7 +117,7 @@ class Bank:
 
         # else raise an error
         else:
-            raise BankError('You are not logged in.')
+            raise AuthenticationError('You are not logged in.')
         return "Logged out."
     
     def require_login(self):
@@ -220,7 +222,7 @@ class Bank:
                     'last_name': customer.last_name,
                     'password': customer.password,
                     'balance_checking': check_acc.balance,
-                    'balance_savings': save_acc.balance if save_acc else 0,
+                    'balance_savings': save_acc.balance if save_acc else '',
                     'active': check_acc.is_active,
                     'overdrafts': check_acc.overdraft_count,
                 })

@@ -40,7 +40,7 @@ while True:
         elif choice == 1:
             customer_id = input('Enter customer ID: ')
             customer_password = input('Enter customer password: ')
-            bank.login(customer_id, customer_password)
+            print(colored(bank.login(customer_id, customer_password) , 'green'))
 
             while True:
                 print(colored('\n--- Account Menu ---', 'light_magenta', attrs=['bold']))
